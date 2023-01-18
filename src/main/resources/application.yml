@@ -1,0 +1,7 @@
+micronaut:
+  application:
+    name: almaManualJobRunner
+netty:
+  default:
+    allocator:
+      max-order: 3
