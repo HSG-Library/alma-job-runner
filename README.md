@@ -23,7 +23,7 @@ Run the Docker container (environment variables set when starting the container)
 ```
 TODO: WRITE COMMAND
 ```
-## How to configure and store the jobs
+## How to configure the jobs and where store the config files
 ### Job configuration files format
 Filename: `[any-name].conf` (files without the `.conf` extension will be ignored)
 
@@ -110,6 +110,25 @@ Docker container:
 ```
 TODO: ADD COMMAND
 ```
+
+### Upgrade dependecies
+**Update Micronaut**<br>
+* Check the current version of Micronaut: [https://micronaut.io/download/](https://micronaut.io/download/)
+* Set the current Version in the `pom.xml` file in `parent > version` and in `properties > micronaut.version`
+
+**Update other dependencies**<br>
+Make sure, the versions of the dependencies to be updates are maintained in properties (`pom.xml`)
+* Check for updates, but only in versions, managed in the properties:
+
+		mvn versions:display-property-updates
+
+* update properties:
+
+		mvn versions:update-properties
+
+### Additional resources
+https://developers.exlibrisgroup.com/blog/working-with-the-alma-jobs-api/
+https://developers.exlibrisgroup.com/alma/apis/docs/conf/UE9TVCAvYWxtYXdzL3YxL2NvbmYvam9icy97am9iX2lkfQ==/
 
 ### Micronaut CLI
 Generated project with the following Micronaut CLI command:
