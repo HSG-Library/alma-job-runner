@@ -3,7 +3,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>ch.unisg.library.systemlibrarian</groupId>
-  <artifactId>alma-manual-job-runner</artifactId>
+  <artifactId>alma-job-runner</artifactId>
   <version>0.1</version>
   <packaging>${packaging}</packaging>
 
@@ -19,6 +19,11 @@
     <release.version>17</release.version>
     <micronaut.version>3.8.1</micronaut.version>
     <micronaut.runtime>netty</micronaut.runtime>
+    <jgit.version>6.4.0.202211300538-r</jgit.version>
+    <jgit.ssh.version>6.4.0.202211300538-r</jgit.ssh.version>
+    <jsch.version>0.2.5</jsch.version>
+    <apache.commonslang3.version>3.12.0</apache.commonslang3.version>
+    <mockito.version>5.1.1</mockito.version>
     <maven.versions.plugin.version>2.12.0</maven.versions.plugin.version>
     <maven.enforcer.plugin.version>3.1.0</maven.enforcer.plugin.version>
     <exec.mainClass>ch.unisg.library.systemlibrarian.Application</exec.mainClass>
@@ -40,6 +45,7 @@
   mvn versions:update-properties
  -->
   <dependencies>
+    <!-- MICRONAUT -->
     <dependency>
       <groupId>io.micronaut</groupId>
       <artifactId>micronaut-inject</artifactId>
@@ -75,6 +81,39 @@
       <artifactId>logback-classic</artifactId>
       <scope>runtime</scope>
     </dependency>
+    <!-- PROJECT -->
+    <dependency>
+      <groupId>org.eclipse.jgit</groupId>
+      <artifactId>org.eclipse.jgit</artifactId>
+      <version>${jgit.version}</version>
+    </dependency>
+    <!--
+      JSCH does not support ssh keys, generated with current
+      versions of openssh.
+      Thus, we have to use a fork of JSCH: https://github.com/mwiede/jsch
+    -->
+    <dependency>
+      <groupId>org.eclipse.jgit</groupId>
+      <artifactId>org.eclipse.jgit.ssh.jsch</artifactId>
+      <version>${jgit.ssh.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.jcraft</groupId>
+          <artifactId>jsch</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.github.mwiede</groupId>
+      <artifactId>jsch</artifactId>
+      <version>${jsch.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${apache.commonslang3.version}</version>
+    </dependency>
+    <!-- MICRONAUT-TEST -->
     <dependency>
       <groupId>io.micronaut.test</groupId>
       <artifactId>micronaut-test-junit5</artifactId>
@@ -88,6 +127,12 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

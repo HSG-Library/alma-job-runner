@@ -1,7 +1,13 @@
 micronaut:
   application:
-    name: almaManualJobRunner
+    name: almaJobRunner
 netty:
   default:
     allocator:
       max-order: 3
+
+git:
+  temp-clone-dir-prefix: "alma-conf"
+
+alma-api:
+  url: "https://api-eu.hosted.exlibrisgroup.com/"
