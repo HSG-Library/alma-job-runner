@@ -2,8 +2,9 @@ package ch.unisg.library.systemlibrarian.jobs;
 
 import java.io.File;
 import java.lang.invoke.MethodHandles;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 
@@ -28,7 +29,7 @@ public class JobSchedulerService {
 	private final GitDirectoryService gitDirectoryService;
 	private final AlmaApiHttpClient almaApiHttpClient;
 
-	private Set<ScheduledFuture<?>> scheduledJobs;
+	private Map<JobConfig, ScheduledFuture<?>> scheduledJobs;
 
 	public JobSchedulerService(
 			TaskScheduler taskScheduler,
@@ -41,7 +42,7 @@ public class JobSchedulerService {
 		this.gitDirectoryService = gitDirectoryService;
 		this.jobConfigService = jobConfigService;
 		this.almaApiHttpClient = almaApiHttpClient;
-		this.scheduledJobs = new HashSet<>();
+		this.scheduledJobs = new HashMap<>();
 	}
 
 	public void registerAllJobs() {
@@ -52,10 +53,17 @@ public class JobSchedulerService {
 	}
 
 	public void unregisterAllJobs() {
-		LOG.info("Unregister '{}' jobs", scheduledJobs.size());
-		scheduledJobs.stream()
-				.forEach(job -> job.cancel(true));
-		scheduledJobs = new HashSet<>();
+		LOG.info("Unregister all '{}' jobs", scheduledJobs.size());
+		scheduledJobs.entrySet().stream()
+				.forEach(entry -> {
+					LOG.info("Unregister job '{}'", entry.getKey().getName());
+					entry.getValue().cancel(true);
+				});
+		scheduledJobs = new HashMap<>();
+	}
+
+	public Set<JobConfig> getScheduledJobs() {
+		return scheduledJobs.keySet();
 	}
 
 	public void reRegisterAllJobs() {
@@ -77,6 +85,6 @@ public class JobSchedulerService {
 	private void registerJob(final JobConfig jobConfig) {
 		LOG.info("Register job '{}' with cron expression '{}'", jobConfig.getName(), jobConfig.getCronExpression());
 		ScheduledFuture<?> scheduledJob = taskScheduler.schedule(jobConfig.getCronExpression(), new JobRunnable(jobConfig, almaApiHttpClient));
-		scheduledJobs.add(scheduledJob);
+		scheduledJobs.put(jobConfig, scheduledJob);
 	}
 }

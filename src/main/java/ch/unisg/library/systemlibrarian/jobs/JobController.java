@@ -1,6 +1,7 @@
 package ch.unisg.library.systemlibrarian.jobs;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
@@ -30,5 +31,12 @@ public class JobController {
 	public List<String> reregister() {
 		jobSchedulerService.reRegisterAllJobs();
 		return List.of("reregister done");
+	}
+
+	@Get("/list")
+	public List<String> list() {
+		return jobSchedulerService.getScheduledJobs().stream()
+				.map(jobConfig -> jobConfig.getName() + " - " + jobConfig.getCronExpression())
+				.collect(Collectors.toList());
 	}
 }
