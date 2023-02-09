@@ -6,11 +6,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.unisg.library.systemlibrarian.jobs.JobSchedulerService;
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.event.ApplicationEventListener;
 import io.micronaut.context.event.StartupEvent;
 import jakarta.inject.Singleton;
 
 @Singleton
+@Requires(notEnv = "test")
 public class Init implements ApplicationEventListener<StartupEvent> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
