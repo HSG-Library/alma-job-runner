@@ -21,7 +21,7 @@ public class JobConfigServiceTest {
 	private JobConfigService jobConfigService;
 
 	@Test
-	void testGetJobConfigs() throws IOException {
+	public void testGetJobConfigs() throws IOException {
 		final String testFile = """
 														test-name
 

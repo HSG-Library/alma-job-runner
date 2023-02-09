@@ -1,10 +1,10 @@
 package ch.unisg.library.systemlibrarian;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import io.micronaut.runtime.EmbeddedApplication;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
-
 import jakarta.inject.Inject;
 
 @MicronautTest
@@ -14,7 +14,7 @@ class AlmaManualJobRunnerTest {
     EmbeddedApplication<?> application;
 
     @Test
-    void testItWorks() {
+    public void testItWorks() {
         Assertions.assertTrue(application.isRunning());
     }
 

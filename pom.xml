@@ -4,20 +4,20 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>ch.unisg.library.systemlibrarian</groupId>
   <artifactId>alma-job-runner</artifactId>
-  <version>0.1</version>
+  <version>0.1.0</version>
   <packaging>${packaging}</packaging>
 
   <parent>
     <groupId>io.micronaut</groupId>
     <artifactId>micronaut-parent</artifactId>
-    <version>3.8.1</version>
+    <version>3.8.4</version>
   </parent>
 
   <properties>
-    <packaging>jar</packaging>
+    <packaging>docker</packaging>
     <jdk.version>17</jdk.version>
     <release.version>17</release.version>
-    <micronaut.version>3.8.1</micronaut.version>
+    <micronaut.version>3.8.4</micronaut.version>
     <micronaut.runtime>netty</micronaut.runtime>
     <jgit.version>6.4.0.202211300538-r</jgit.version>
     <jgit.ssh.version>6.4.0.202211300538-r</jgit.ssh.version>
@@ -26,6 +26,7 @@
     <mockito.version>5.1.1</mockito.version>
     <maven.versions.plugin.version>2.12.0</maven.versions.plugin.version>
     <maven.enforcer.plugin.version>3.1.0</maven.enforcer.plugin.version>
+    <maven.jib.plugin.version>3.3.1</maven.jib.plugin.version>
     <exec.mainClass>ch.unisg.library.systemlibrarian.Application</exec.mainClass>
   </properties>
 
@@ -82,11 +83,11 @@
       <scope>runtime</scope>
     </dependency>
     <!-- PROJECT -->
-    <dependency>
+    <!-- <dependency>
       <groupId>org.eclipse.jgit</groupId>
       <artifactId>org.eclipse.jgit</artifactId>
       <version>${jgit.version}</version>
-    </dependency>
+    </dependency> -->
     <!--
       JSCH does not support ssh keys, generated with current
       versions of openssh.
@@ -160,7 +161,7 @@
           </annotationProcessorPaths>
           <compilerArgs>
             <arg>-Amicronaut.processing.group=ch.unisg.library.systemlibrarian</arg>
-            <arg>-Amicronaut.processing.module=alma-manual-job-runner</arg>
+            <arg>-Amicronaut.processing.module=alma-job-runner</arg>
           </compilerArgs>
         </configuration>
       </plugin>
@@ -200,7 +201,32 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>com.google.cloud.tools</groupId>
+        <artifactId>jib-maven-plugin</artifactId>
+        <version>${maven.jib.plugin.version}</version>
+        <configuration>
+          <from>
+            <image>eclipse-temurin:17-jdk-alpine</image>
+          </from>
+          <to>
+            <image>ghcr.io/hsg-library/alma-job-runner</image>
+            <auth>
+              <username>${env.REGISTRY_USERNAME}</username>
+              <password>${env.REGISTRY_PASSWORD}</password>
+            </auth>
+            <tags>${project.version}</tags>
+          </to>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
-
+  <profiles>
+    <profile>
+      <id>jar</id>
+      <properties>
+        <packaging>jar</packaging>
+      </properties>
+    </profile>
+  </profiles>
 </project>
