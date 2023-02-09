@@ -3,28 +3,32 @@ This app allows schedule any Alma job. The app loads job configurations from ano
 registers a cron job for every configuration file.
 When the cron expressions triggers, the job is started via an Alma API call.
 
-## How to configure and run the app
-### App Configuration
+# How to configure and run the app
+## App Configuration
 The app needs three environment variables to run:
 
 * `GIT_REPO_SSH`: this is the connection to the Git repo with the job config files (more on this later), something like `git@github.com:HSG-Library/alma-job-runner-config.git`
 * `GIT_PRIVATE_KEY`: this is the private SSH key, needed to authenticate when cloning the config repo (more on this later), something like `"-----BEGIN OPENSSH PRIVATE KEY-----\nb3NOTMYACTUALKEYrZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW\nQyNTUxOQAAACAI1F[...]`. Notice the '\n' in the key.
 * `ALMA_API_KEY`: this is the Alma API key needed to start the jobs. The key needs write permission to the 'Configuration' area.
 
-### Run the app
-The app is available as runnable jar and as Docker container.
+## Run the app
+The app is available as Docker image.
 
-Run the jar (environment variables must be set):
+Run the Docker container, [Docker](https://www.docker.com/) must be installed:
+```bash
+export GIT_REPO_SSH="git@github.com:your/config-repo.git"
+export GIT_PRIVATE_KEY="$(echo 'base64-of-your-private-key-for-the-config-repo' | base64 -d)"
+export ALMA_API_KEY="your-alma-api-key"
+
+docker run -i --env GIT_REPO_SSH=$GIT_REPO_SSH --env GIT_PRIVATE_KEY=$GIT_PRIVATE_KEY --env ALMA_API_KEY=$ALMA_API_KEY ghcr.io/hsg-library/alma-job-runner
 ```
-TODO: WRITE COMMAND
+Since Docker can not handle `\n` in `--env` parameters, we need to encode the private key with base64 and provide it via `"$(echo <base64-key> | base64 -d)"`. Encode the key like this:
+```bash
+cat path/to/your/privatekey | base64
 ```
 
-Run the Docker container (environment variables set when starting the container):
-```
-TODO: WRITE COMMAND
-```
-## How to configure the jobs and where store the config files
-### Job configuration files format
+# How to configure the jobs and where store the config files
+## Job configuration files format
 Filename: `[any-name].conf` (files without the `.conf` extension will be ignored)
 
 * 1st line: name of the Job
@@ -65,13 +69,13 @@ POST /almaws/v1/conf/jobs/M502xxx?op=run
 	</parameters>
 </job>
 ```
-### Where to get the configuration data
+## Where to get the configuration data
 * Name: just choose an fitting name
 * Cron expression: this defines when the job should run, use websites like https://crontab.guru or https://cronexpressiontogo.com
 * Method and Api URI: Use Alma. This information is provided when configuring a job. See: https://developers.exlibrisgroup.com/blog/working-with-the-alma-jobs-api/
 * XML Payload: Same as above
 
-### How to store the config files
+## How to store the config files
 The config files must be stored in another Git repo. This repo should probably be private.
 The files should be in the main branch without any directories.
 
@@ -80,11 +84,8 @@ It must be possible to clone the repo via SSH. To achieve this the following ste
 2. Add your public key as deployment key in your git repo
 3. Keep your private key secret, but configure it as environment variable to run the app
 
-
-
-
-## Dev-Notes
-### Run in VSCode
+# Dev-Notes
+## Run in VSCode
 Add the following command to your `launch.json`:
 ```
 {
@@ -101,17 +102,23 @@ Add the following command to your `launch.json`:
 }
 ```
 
-### Build
-Runnable jar:
+## Build
+Build Docker image:
+```bash
+./mvnw package
 ```
-TODO: ADD COMMAND
+Push Docker image:<br>
+This needs authentication and is done via Github Workflow, using the Github Token from the workflow. If the image must be pushed otherwise, a Github PAT must be used.
+```bash
+./mvnw deploy
 ```
-Docker container:
-```
-TODO: ADD COMMAND
+## Test
+Test don't run automatically via Maven, because packaging is set to `docker`. To run tests via Maven use the `jar` profile:
+```bash
+./mvnw test -Pjar
 ```
 
-### Upgrade dependecies
+## Upgrade dependecies
 **Update Micronaut**<br>
 * Check the current version of Micronaut: [https://micronaut.io/download/](https://micronaut.io/download/)
 * Set the current Version in the `pom.xml` file in `parent > version` and in `properties > micronaut.version`
@@ -126,11 +133,11 @@ Make sure, the versions of the dependencies to be updates are maintained in prop
 
 		mvn versions:update-properties
 
-### Additional resources
+## Additional resources
 https://developers.exlibrisgroup.com/blog/working-with-the-alma-jobs-api/
 https://developers.exlibrisgroup.com/alma/apis/docs/conf/UE9TVCAvYWxtYXdzL3YxL2NvbmYvam9icy97am9iX2lkfQ==/
 
-### Micronaut CLI
+## Micronaut CLI
 Generated project with the following Micronaut CLI command:
 
     mn create-app --build=maven --jdk=17 --lang=java --test=junit --features=logback ch.unisg.library.systemlibrarian.alma-job-runner
