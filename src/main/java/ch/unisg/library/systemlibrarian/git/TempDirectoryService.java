@@ -13,14 +13,14 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
 @Singleton
-public class GitDirectoryService {
+public class TempDirectoryService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	private final GitConfig gitConfig;
 
 	@Inject
-	public GitDirectoryService(GitConfig gitConfig) {
+	public TempDirectoryService(GitConfig gitConfig) {
 		this.gitConfig = gitConfig;
 	}
 
