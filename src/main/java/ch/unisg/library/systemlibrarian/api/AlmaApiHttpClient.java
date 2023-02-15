@@ -36,6 +36,7 @@ public class AlmaApiHttpClient {
 		URI uri = createRequestUri(jobConfig);
 		MutableHttpRequest<String> request = HttpRequest.create(HttpMethod.parse(jobConfig.getHttpMethod()), uri.toString())
 				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_XML)
 				.body(jobConfig.getXmlPayload());
 		LOG.info("Request for job '{}': '{}'", jobConfig.getName(), request.toString());
 		try {
