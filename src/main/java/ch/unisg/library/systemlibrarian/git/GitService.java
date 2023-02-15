@@ -2,6 +2,7 @@ package ch.unisg.library.systemlibrarian.git;
 
 import java.io.File;
 import java.lang.invoke.MethodHandles;
+import java.util.Base64;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.TransportConfigCallback;
@@ -38,12 +39,17 @@ public class GitService {
 			return Git.cloneRepository()
 					.setDirectory(cloneDirectory)
 					.setURI(gitConfig.getRepoSSH())
-					.setTransportConfigCallback(new SshTransportConfigCallback(gitConfig.getPrivateKey()))
+					.setTransportConfigCallback(new SshTransportConfigCallback(getPrivateKey()))
 					.call();
 		} catch (GitAPIException e) {
 			LOG.error("Could not clone repository from '{}' to '{}'", gitConfig.getRepoSSH(), cloneDirectory.getAbsolutePath());
 			throw new RuntimeException("Unable to clone Git repository", e);
 		}
+	}
+
+	private String getPrivateKey() {
+		byte[] decodedKey = Base64.getDecoder().decode(gitConfig.getPrivateKeyBase64());
+		return new String(decodedKey);
 	}
 
 	private static class SshTransportConfigCallback implements TransportConfigCallback {

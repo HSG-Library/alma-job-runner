@@ -8,7 +8,8 @@ When the cron expressions triggers, the job is started via an Alma API call.
 The app needs three environment variables to run:
 
 * `GIT_REPO_SSH`: this is the connection to the Git repo with the job config files (more on this later), something like `git@github.com:HSG-Library/alma-job-runner-config.git`
-* `GIT_PRIVATE_KEY`: this is the private SSH key, needed to authenticate when cloning the config repo (more on this later), something like `"-----BEGIN OPENSSH PRIVATE KEY-----\nb3NOTMYACTUALKEYrZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW\nQyNTUxOQAAACAI1F[...]`. Notice the '\n' in the key.
+* `GIT_PRIVATE_KEY_BASE64`: this is the private SSH key encoded with Base64, needed to authenticate when cloning the config repo (more on this later), something like `"LS0tLS1CRUdJTiBPUEVOU1NIIFBSSVZBVEUgS0VZLS0tLS0KYjN
+CbGJuTnphQzFyWlhrdGRqRUFBQUFBQkc1dmJtVUFBQUFFYm05dVpRQUFBQUFBQUFBQkFBQUFNd0FBQUF0emMyZ3RaVwpReU5UVXhPUUFBQUNBSTFGMzdNdWJrRWRoT20yYS"`. The Base64 encoding is needed to avoid issues with newlines when passing environment variables to Docker.
 * `ALMA_API_KEY`: this is the Alma API key needed to start the jobs. The key needs write permission to the 'Configuration' area.
 
 ## Run the app
@@ -17,14 +18,23 @@ The app is available as Docker image.
 Run the Docker container, [Docker](https://www.docker.com/) must be installed:
 ```bash
 export GIT_REPO_SSH="git@github.com:your/config-repo.git"
-export GIT_PRIVATE_KEY="$(echo 'base64-of-your-private-key-for-the-config-repo' | base64 -d)"
+export GIT_PRIVATE_KEY_BASE64="<base64-of-your-private-key>"
 export ALMA_API_KEY="your-alma-api-key"
 
-docker run -i --env GIT_REPO_SSH=$GIT_REPO_SSH --env GIT_PRIVATE_KEY=$GIT_PRIVATE_KEY --env ALMA_API_KEY=$ALMA_API_KEY ghcr.io/hsg-library/alma-job-runner
+docker run -i --env GIT_REPO_SSH=$GIT_REPO_SSH --env GIT_PRIVATE_KEY_BASE64=$GIT_PRIVATE_KEY_BASE64 --env ALMA_API_KEY=$ALMA_API_KEY ghcr.io/hsg-library/alma-job-runner
 ```
-Since Docker can not handle `\n` in `--env` parameters, we need to encode the private key with base64 and provide it via `"$(echo <base64-key> | base64 -d)"`. Encode the key like this:
+Since Docker can not handle `\n` in `--env` parameters, we need to encode the private key with base64. Encode the key like this on Linux-like or macOS:
 ```bash
 cat path/to/your/privatekey | base64
+```
+Encode like this on Windows in PowerShell:
+```powershell
+([Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+[...your-full-private-key]
+Fj2Nw1+DxfGbAfJJvs7NAAAACWFsbWEtam9icwECAwQ=
+-----END OPENSSH PRIVATE KEY-----
+"))) -join ""
 ```
 
 # How to configure the jobs and where store the config files

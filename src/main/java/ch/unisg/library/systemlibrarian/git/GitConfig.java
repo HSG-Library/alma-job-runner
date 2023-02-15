@@ -18,12 +18,12 @@ public interface GitConfig {
 	public String getTempCloneDirPrefix();
 
 	/*
-	 * The private key must be provided environment variable: GIT_PRIVATE_KEY =
-	 * "-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNz[...]
+	 * The private key must be provided environment variable:
+	 * GIT_PRIVATE_KEY_BASE64="VGhpcyBpcyBhIHRlc3Qgc3RyaW5n"
 	 *
-	 * (provide as one single line, with '\n')
+	 * (provide as one single line, base64 encoded)
 	 */
 	@Bindable
-	public String getPrivateKey();
+	public String getPrivateKeyBase64();
 
 }

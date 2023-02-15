@@ -13,8 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.unisg.library.systemlibrarian.api.AlmaApiHttpClient;
-import ch.unisg.library.systemlibrarian.git.GitDirectoryService;
 import ch.unisg.library.systemlibrarian.git.GitService;
+import ch.unisg.library.systemlibrarian.git.TempDirectoryService;
 import io.micronaut.scheduling.TaskScheduler;
 import jakarta.inject.Singleton;
 
@@ -26,7 +26,7 @@ public class JobSchedulerService {
 	private final TaskScheduler taskScheduler;
 	private final JobConfigService jobConfigService;
 	private final GitService gitService;
-	private final GitDirectoryService gitDirectoryService;
+	private final TempDirectoryService gitDirectoryService;
 	private final AlmaApiHttpClient almaApiHttpClient;
 
 	private Map<JobConfig, ScheduledFuture<?>> scheduledJobs;
@@ -34,7 +34,7 @@ public class JobSchedulerService {
 	public JobSchedulerService(
 			TaskScheduler taskScheduler,
 			GitService gitService,
-			GitDirectoryService gitDirectoryService,
+			TempDirectoryService gitDirectoryService,
 			JobConfigService jobConfigService,
 			AlmaApiHttpClient almaApiHttpClient) {
 		this.taskScheduler = taskScheduler;
