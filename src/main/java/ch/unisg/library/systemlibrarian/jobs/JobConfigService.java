@@ -17,12 +17,19 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.unisg.library.systemlibrarian.cron.CronValidatorService;
 import jakarta.inject.Singleton;
 
 @Singleton
 public class JobConfigService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+	private final CronValidatorService cronValidatorService;
+
+	public JobConfigService(CronValidatorService cronValidatorService) {
+		this.cronValidatorService = cronValidatorService;
+	}
 
 	public List<JobConfig> getJobConfigs(File workTree) {
 		List<File> configFiles = getConfigFiles(workTree);
@@ -61,8 +68,13 @@ public class JobConfigService {
 	private Optional<JobConfig> parseConfigFile(final List<String> configLines) {
 		final String name = StringUtils.trim(configLines.remove(0));
 		LOG.info("Name: '{}'", name);
+
 		final String cronExpression = StringUtils.trim(configLines.remove(0));
-		LOG.info("Cron expression: '{}'", cronExpression);
+		if (!cronValidatorService.isValid(cronExpression)) {
+			throw new RuntimeException("Could not parse cron expression: " + cronExpression);
+		}
+		final String normalizedCronExpression = cronValidatorService.normalize(cronExpression);
+		LOG.info("Cron expression: '{}', '{}'", normalizedCronExpression, cronValidatorService.describe(normalizedCronExpression));
 
 		final String apiInfo = StringUtils.trim(configLines.remove(0));
 		LOG.info("Api Info: '{}'", apiInfo);

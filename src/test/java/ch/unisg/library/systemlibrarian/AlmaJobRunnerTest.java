@@ -8,7 +8,7 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 
 @MicronautTest
-class AlmaManualJobRunnerTest {
+class AlmaJobRunnerTest {
 
     @Inject
     EmbeddedApplication<?> application;
@@ -17,5 +17,4 @@ class AlmaManualJobRunnerTest {
     public void testItWorks() {
         Assertions.assertTrue(application.isRunning());
     }
-
 }

@@ -3,6 +3,7 @@ package ch.unisg.library.systemlibrarian.jobs;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import ch.unisg.library.systemlibrarian.cron.CronValidatorService;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 
@@ -10,9 +11,11 @@ import io.micronaut.http.annotation.Get;
 public class JobController {
 
 	private final JobSchedulerService jobSchedulerService;
+	private final CronValidatorService cronValidatorService;
 
-	public JobController(JobSchedulerService jobService) {
+	public JobController(JobSchedulerService jobService, CronValidatorService cronValidatorService) {
 		this.jobSchedulerService = jobService;
+		this.cronValidatorService = cronValidatorService;
 	}
 
 	@Get("/register")
@@ -36,7 +39,7 @@ public class JobController {
 	@Get("/list")
 	public List<String> list() {
 		return jobSchedulerService.getScheduledJobs().stream()
-				.map(jobConfig -> jobConfig.getName() + " - " + jobConfig.getCronExpression())
+				.map(jobConfig -> jobConfig.getName() + " - " + jobConfig.getCronExpression() + " (" + cronValidatorService.describe(jobConfig.getCronExpression()) + ")")
 				.collect(Collectors.toList());
 	}
 }
