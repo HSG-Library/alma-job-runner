@@ -21,7 +21,7 @@ export GIT_REPO_SSH="git@github.com:your/config-repo.git"
 export GIT_PRIVATE_KEY_BASE64="<base64-of-your-private-key>"
 export ALMA_API_KEY="your-alma-api-key"
 
-docker run -i --env GIT_REPO_SSH=$GIT_REPO_SSH --env GIT_PRIVATE_KEY_BASE64=$GIT_PRIVATE_KEY_BASE64 --env ALMA_API_KEY=$ALMA_API_KEY ghcr.io/hsg-library/alma-job-runner
+docker run -i -p 8080:8080 --env GIT_REPO_SSH=$GIT_REPO_SSH --env GIT_PRIVATE_KEY_BASE64=$GIT_PRIVATE_KEY_BASE64 --env ALMA_API_KEY=$ALMA_API_KEY ghcr.io/hsg-library/alma-job-runner
 ```
 Since Docker can not handle `\n` in `--env` parameters, we need to encode the private key with base64. Encode the key like this on Linux-like or macOS:
 ```bash
@@ -36,6 +36,12 @@ Fj2Nw1+DxfGbAfJJvs7NAAAACWFsbWEtam9icwECAwQ=
 -----END OPENSSH PRIVATE KEY-----
 "))) -join ""
 ```
+The `job` endpoints should now be available under `http://localhost:8080/jobs`. The following endpoints are available:
+- register: register all job configs from the git repo `http://localhost:8080/jobs/register`
+- unregister: unregister all job configs from the git repo `http://localhost:8080/jobs/unregister`
+- reregister: first unregister all jobs, get a new clone of the config repo and register all job configs `http://localhost:8080/jobs/reregister`
+- list: list all registered jobs `http://localhost:8080/jobs/list`
+- results: show the responses from the run jobs since the start of the instance `http://localhost:8080/jobs/results`
 
 # How to configure the jobs and where store the config files
 ## Job configuration files format
@@ -106,7 +112,7 @@ Add the following command to your `launch.json`:
     "projectName": "alma-job-runner",
     "env": {
         "GIT_REPO_SSH": "git@github.com:your/config-repo",
-        "GIT_PRIVATE_KEY": "-----BEGIN OPENSSH PRIVATE KEY-----\nYOUR-PRIVATE-KEY\n-----END OPENSSH PRIVATE KEY-----",
+        "GIT_PRIVATE_KEY_BASE64": "<base64 of your private key>",
         "ALMA_API_KEY": "YOUR-ALMA-API-KEY"
     }
 }
