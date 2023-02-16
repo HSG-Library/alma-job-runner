@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jgit.api.Git;
@@ -13,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.unisg.library.systemlibrarian.api.AlmaApiHttpClient;
+import ch.unisg.library.systemlibrarian.api.models.AlmaApiJobResponse;
+import ch.unisg.library.systemlibrarian.cron.CronValidatorService;
 import ch.unisg.library.systemlibrarian.git.GitService;
 import ch.unisg.library.systemlibrarian.git.TempDirectoryService;
 import io.micronaut.scheduling.TaskScheduler;
@@ -28,21 +31,26 @@ public class JobSchedulerService {
 	private final GitService gitService;
 	private final TempDirectoryService gitDirectoryService;
 	private final AlmaApiHttpClient almaApiHttpClient;
+	private final CronValidatorService cronValidatorService;
 
 	private Map<JobConfig, ScheduledFuture<?>> scheduledJobs;
+	private ConcurrentHashMap<JobConfig, List<AlmaApiJobResponse>> results;
 
 	public JobSchedulerService(
-			TaskScheduler taskScheduler,
-			GitService gitService,
-			TempDirectoryService gitDirectoryService,
-			JobConfigService jobConfigService,
-			AlmaApiHttpClient almaApiHttpClient) {
+			final TaskScheduler taskScheduler,
+			final GitService gitService,
+			final TempDirectoryService gitDirectoryService,
+			final JobConfigService jobConfigService,
+			final AlmaApiHttpClient almaApiHttpClient,
+			final CronValidatorService cronValidatorService) {
 		this.taskScheduler = taskScheduler;
 		this.gitService = gitService;
 		this.gitDirectoryService = gitDirectoryService;
 		this.jobConfigService = jobConfigService;
 		this.almaApiHttpClient = almaApiHttpClient;
+		this.cronValidatorService = cronValidatorService;
 		this.scheduledJobs = new HashMap<>();
+		this.results = new ConcurrentHashMap<>();
 	}
 
 	public void registerAllJobs() {
@@ -66,6 +74,10 @@ public class JobSchedulerService {
 		return scheduledJobs.keySet();
 	}
 
+	public Map<JobConfig, List<AlmaApiJobResponse>> getResults() {
+		return results;
+	}
+
 	public void reRegisterAllJobs() {
 		unregisterAllJobs();
 		registerAllJobs();
@@ -83,8 +95,8 @@ public class JobSchedulerService {
 	}
 
 	private void registerJob(final JobConfig jobConfig) {
-		LOG.info("Register job '{}' with cron expression '{}'", jobConfig.getName(), jobConfig.getCronExpression());
-		ScheduledFuture<?> scheduledJob = taskScheduler.schedule(jobConfig.getCronExpression(), new JobRunnable(jobConfig, almaApiHttpClient));
+		LOG.info("Register job '{}' with cron expression '{}', '{}'", jobConfig.getName(), jobConfig.getCronExpression(), cronValidatorService.describe(jobConfig.getCronExpression()));
+		ScheduledFuture<?> scheduledJob = taskScheduler.schedule(jobConfig.getCronExpression(), new JobRunnable(jobConfig, almaApiHttpClient, results));
 		scheduledJobs.put(jobConfig, scheduledJob);
 	}
 }

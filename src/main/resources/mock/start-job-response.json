@@ -1,0 +1,48 @@
+{
+	"id": "M50216",
+	"name": "Remove Titles from Collection",
+	"description": "Remove titles in a set from a chosen collection",
+	"type": {
+		"value": "MANUAL",
+		"desc": "Manual"
+	},
+	"category": {
+		"value": "INFORMATION_UPDATE",
+		"desc": "Information Update"
+	},
+	"content": {
+		"value": "UNASSIGN_TITLES_FROM_COLLECTION_JOB",
+		"desc": "Bibliographic title"
+	},
+	"parameter": [
+		{
+			"name": {
+				"value": "COLLECTION_NAME"
+			},
+			"value": "Test-Collection"
+		},
+		{
+			"name": {
+				"value": "COLLECTION_ID"
+			},
+			"value": "8170219990005506"
+		},
+		{
+			"name": {
+				"value": "set_id"
+			},
+			"value": "1932538120005506"
+		},
+		{
+			"name": {
+				"value": "job_name"
+			},
+			"value": "Remove Titles from Collection - via API - Collection-Api-Test"
+		}
+	],
+	"additional_info": {
+		"value": "Job no. 3896509020005506 triggered on Wed, 15 Feb 2023 12:46:18 GMT",
+		"link": "https://api-eu.hosted.exlibrisgroup.com/almaws/v1/conf/jobs/M50216/instances/3896509020005506"
+	},
+	"link": "https://api-eu.hosted.exlibrisgroup.com/almaws/v1/conf/jobs/M50216"
+}

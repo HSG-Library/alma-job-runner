@@ -1,8 +1,10 @@
 package ch.unisg.library.systemlibrarian.jobs;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import ch.unisg.library.systemlibrarian.api.models.AlmaApiJobResponse;
 import ch.unisg.library.systemlibrarian.cron.CronValidatorService;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
@@ -41,5 +43,11 @@ public class JobController {
 		return jobSchedulerService.getScheduledJobs().stream()
 				.map(jobConfig -> jobConfig.getName() + " - " + jobConfig.getCronExpression() + " (" + cronValidatorService.describe(jobConfig.getCronExpression()) + ")")
 				.collect(Collectors.toList());
+	}
+
+	@Get("/results")
+	public Map<String, List<AlmaApiJobResponse>> results() {
+		return jobSchedulerService.getResults().entrySet().stream()
+				.collect(Collectors.toMap(e -> e.getKey().getName(), e -> e.getValue()));
 	}
 }

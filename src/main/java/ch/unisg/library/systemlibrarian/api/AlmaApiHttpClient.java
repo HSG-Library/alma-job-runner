@@ -3,10 +3,10 @@ package ch.unisg.library.systemlibrarian.api;
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.unisg.library.systemlibrarian.api.models.AlmaApiJobResponse;
 import ch.unisg.library.systemlibrarian.jobs.JobConfig;
 import io.micronaut.http.HttpMethod;
 import io.micronaut.http.HttpRequest;
@@ -32,7 +32,7 @@ public class AlmaApiHttpClient {
 		this.httpClient = httpClient;
 	}
 
-	public String sendJobRequest(JobConfig jobConfig) {
+	public AlmaApiJobResponse sendJobRequest(JobConfig jobConfig) {
 		URI uri = createRequestUri(jobConfig);
 		MutableHttpRequest<String> request = HttpRequest.create(HttpMethod.parse(jobConfig.getHttpMethod()), uri.toString())
 				.accept(MediaType.APPLICATION_JSON)
@@ -40,12 +40,13 @@ public class AlmaApiHttpClient {
 				.body(jobConfig.getXmlPayload());
 		LOG.info("Request for job '{}': '{}'", jobConfig.getName(), request.toString());
 		try {
-			HttpResponse<String> response = httpClient.toBlocking().exchange(request);
-			return response.body();
+			HttpResponse<AlmaApiJobResponse> response = httpClient.toBlocking().exchange(request, AlmaApiJobResponse.class);
+			return response.getBody()
+					.orElseThrow(() -> new HttpClientResponseException("Response not serializable or Empty", response));
 		} catch (HttpClientResponseException e) {
 			LOG.error("Request not successful. HTTP Status Code: '{} {}', URI: '{}'", e.getStatus().getCode(), e.getResponse().status(), uri);
 			LOG.info("Full Stacktrace: ", e);
-			return StringUtils.EMPTY;
+			return null;
 		}
 	}
 
