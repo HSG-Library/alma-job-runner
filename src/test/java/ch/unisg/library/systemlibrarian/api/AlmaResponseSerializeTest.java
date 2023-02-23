@@ -29,6 +29,7 @@ public class AlmaResponseSerializeTest {
 		AlmaApiJobResponse jobResponse = objectMapper.readValue(resourceAsStream.get(), AlmaApiJobResponse.class);
 		Assertions.assertEquals("M50216", jobResponse.getId());
 		Assertions.assertEquals("Remove Titles from Collection", jobResponse.getName());
+		Assertions.assertEquals("Job no. 3896509020005506 triggered on Wed, 15 Feb 2023 12:46:18 GMT", jobResponse.getAdditionalInfo().getValue());
 		Assertions.assertEquals("https://api-eu.hosted.exlibrisgroup.com/almaws/v1/conf/jobs/M50216/instances/3896509020005506", jobResponse.getAdditionalInfo().getLink());
 	}
 }

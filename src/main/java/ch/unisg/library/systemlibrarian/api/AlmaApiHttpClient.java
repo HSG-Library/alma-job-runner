@@ -3,6 +3,7 @@ package ch.unisg.library.systemlibrarian.api;
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
 
+import jakarta.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,11 +35,11 @@ public class AlmaApiHttpClient {
 
 	public AlmaApiJobResponse sendJobRequest(JobConfig jobConfig) {
 		URI uri = createRequestUri(jobConfig);
-		MutableHttpRequest<String> request = HttpRequest.create(HttpMethod.parse(jobConfig.getHttpMethod()), uri.toString())
+		MutableHttpRequest<String> request = HttpRequest.create(HttpMethod.parse(jobConfig.httpMethod()), uri.toString())
 				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_XML)
-				.body(jobConfig.getXmlPayload());
-		LOG.info("Request for job '{}': '{}'", jobConfig.getName(), request.toString());
+				.body(jobConfig.xmlPayload());
+		LOG.info("Request for job '{}': '{}'", jobConfig.name(), request.toString());
 		try {
 			HttpResponse<AlmaApiJobResponse> response = httpClient.toBlocking().exchange(request, AlmaApiJobResponse.class);
 			return response.getBody()
@@ -51,13 +52,13 @@ public class AlmaApiHttpClient {
 	}
 
 	private URI createRequestUri(JobConfig jobConfig) {
-		LOG.info("Creating request URI from job config '{}'", jobConfig.getName());
+		LOG.info("Creating request URI from job config '{}'", jobConfig.name());
 		URI uri = UriBuilder.of(almaApiConfig.getUrl())
-				.path(jobConfig.getApiPath())
-				.queryParam(jobConfig.getApiQuery().getKey(), jobConfig.getApiQuery().getValue())
+				.path(jobConfig.apiPath())
+				.queryParam(jobConfig.apiQuery().getKey(), jobConfig.apiQuery().getValue())
 				.queryParam(API_KEY_PARAMETER, almaApiConfig.getKey())
 				.build();
-		LOG.info("URI for job '{}': '{}'", jobConfig.getName(), uri.toString());
+		LOG.info("URI for job '{}': '{}'", jobConfig.name(), uri);
 		return uri;
 	}
 }

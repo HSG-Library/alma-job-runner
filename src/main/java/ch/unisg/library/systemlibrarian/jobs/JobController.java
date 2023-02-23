@@ -21,7 +21,7 @@ public class JobController {
 	}
 
 	@Get("/register")
-	public List<String> resgister() {
+	public List<String> register() {
 		jobSchedulerService.reRegisterAllJobs();
 		return List.of("register done");
 	}
@@ -41,13 +41,13 @@ public class JobController {
 	@Get("/list")
 	public List<String> list() {
 		return jobSchedulerService.getScheduledJobs().stream()
-				.map(jobConfig -> jobConfig.getName() + " - " + jobConfig.getCronExpression() + " (" + cronValidatorService.describe(jobConfig.getCronExpression()) + ")")
+				.map(jobConfig -> jobConfig.name() + " - " + jobConfig.cronExpression() + " (" + cronValidatorService.describe(jobConfig.cronExpression()) + ")")
 				.collect(Collectors.toList());
 	}
 
 	@Get("/results")
 	public Map<String, List<AlmaApiJobResponse>> results() {
 		return jobSchedulerService.getResults().entrySet().stream()
-				.collect(Collectors.toMap(e -> e.getKey().getName(), e -> e.getValue()));
+				.collect(Collectors.toMap(e -> e.getKey().name(), Map.Entry::getValue));
 	}
 }

@@ -38,8 +38,8 @@ public class CronValidatorServiceTest {
 			"/2 * * * *,*/2 * * * *",
 			"  * * * * *   ,* * * * *"
 	})
-	void testNormalize(String cronExpresssion, String expectedNormalized) {
-		final String normalized = cronValidatorService.normalize(cronExpresssion);
+	void testNormalize(String cronExpression, String expectedNormalized) {
+		final String normalized = cronValidatorService.normalize(cronExpression);
 		System.out.println(normalized);
 		Assertions.assertEquals(expectedNormalized, normalized);
 	}

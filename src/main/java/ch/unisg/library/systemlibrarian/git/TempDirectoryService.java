@@ -37,9 +37,9 @@ public class TempDirectoryService {
 	public void removeTempCloneDirectory(File directory) {
 		if (directory.exists()) {
 			directory.delete();
-			LOG.info("Deleted directory '{}'", directory.toString());
+			LOG.info("Deleted directory '{}'", directory);
 		} else {
-			LOG.warn("The direcory '{}' does not exist.", directory.toString());
+			LOG.warn("The directory '{}' does not exist.", directory);
 		}
 	}
 }

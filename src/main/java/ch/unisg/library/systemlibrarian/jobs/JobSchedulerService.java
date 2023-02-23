@@ -34,7 +34,7 @@ public class JobSchedulerService {
 	private final CronValidatorService cronValidatorService;
 
 	private Map<JobConfig, ScheduledFuture<?>> scheduledJobs;
-	private ConcurrentHashMap<JobConfig, List<AlmaApiJobResponse>> results;
+	private final ConcurrentHashMap<JobConfig, List<AlmaApiJobResponse>> results;
 
 	public JobSchedulerService(
 			final TaskScheduler taskScheduler,
@@ -56,17 +56,15 @@ public class JobSchedulerService {
 	public void registerAllJobs() {
 		List<JobConfig> jobConfigs = getJobConfigs();
 		LOG.info("Register '{}' jobs", jobConfigs.size());
-		jobConfigs.stream()
-				.forEach(jobConfig -> registerJob(jobConfig));
+		jobConfigs.forEach(this::registerJob);
 	}
 
 	public void unregisterAllJobs() {
 		LOG.info("Unregister all '{}' jobs", scheduledJobs.size());
-		scheduledJobs.entrySet().stream()
-				.forEach(entry -> {
-					LOG.info("Unregister job '{}'", entry.getKey().getName());
-					entry.getValue().cancel(true);
-				});
+		scheduledJobs.forEach((key, value) -> {
+			LOG.info("Unregister job '{}'", key.name());
+			value.cancel(true);
+		});
 		scheduledJobs = new HashMap<>();
 	}
 
@@ -95,8 +93,8 @@ public class JobSchedulerService {
 	}
 
 	private void registerJob(final JobConfig jobConfig) {
-		LOG.info("Register job '{}' with cron expression '{}', '{}'", jobConfig.getName(), jobConfig.getCronExpression(), cronValidatorService.describe(jobConfig.getCronExpression()));
-		ScheduledFuture<?> scheduledJob = taskScheduler.schedule(jobConfig.getCronExpression(), new JobRunnable(jobConfig, almaApiHttpClient, results));
+		LOG.info("Register job '{}' with cron expression '{}', '{}'", jobConfig.name(), jobConfig.cronExpression(), cronValidatorService.describe(jobConfig.cronExpression()));
+		ScheduledFuture<?> scheduledJob = taskScheduler.schedule(jobConfig.cronExpression(), new JobRunnable(jobConfig, almaApiHttpClient, results));
 		scheduledJobs.put(jobConfig, scheduledJob);
 	}
 }

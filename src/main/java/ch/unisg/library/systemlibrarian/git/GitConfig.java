@@ -9,13 +9,13 @@ import io.micronaut.core.bind.annotation.Bindable;
 public interface GitConfig {
 
 	@Bindable
-	public String getRepoSSH();
+	String getRepoSSH();
 
 	@Bindable
-	public String getBranch();
+	String getBranch();
 
 	@Bindable
-	public String getTempCloneDirPrefix();
+	String getTempCloneDirPrefix();
 
 	/*
 	 * The private key must be provided environment variable:
@@ -24,6 +24,5 @@ public interface GitConfig {
 	 * (provide as one single line, base64 encoded)
 	 */
 	@Bindable
-	public String getPrivateKeyBase64();
-
+	String getPrivateKeyBase64();
 }

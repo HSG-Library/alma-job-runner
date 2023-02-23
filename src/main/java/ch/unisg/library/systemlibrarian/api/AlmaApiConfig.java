@@ -9,12 +9,12 @@ import io.micronaut.core.bind.annotation.Bindable;
 public interface AlmaApiConfig {
 
 	@Bindable
-	public String getUrl();
+	String getUrl();
 
 	/*
 	 * The api key must be provided environment variable: ALMA_API_KEY = "abc"
 	 */
 	@Bindable
-	public String getKey();
+	String getKey();
 
 }

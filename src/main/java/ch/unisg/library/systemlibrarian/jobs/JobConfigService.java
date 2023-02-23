@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,13 +38,14 @@ public class JobConfigService {
 	}
 
 	private List<File> getConfigFiles(File workTree) {
-		return Arrays.stream(workTree.listFiles((file, name) -> StringUtils.endsWith(name, ".conf")))
+		final File[] fileArray = Objects.requireNonNull(workTree.listFiles((file, name) -> StringUtils.endsWith(name, ".conf")));
+		return Arrays.stream(fileArray)
 				.collect(Collectors.toList());
 	}
 
 	private List<JobConfig> createJobConfigs(List<File> configFiles) {
 		return configFiles.stream()
-				.map(configFile -> createJobConfig(configFile))
+				.map(this::createJobConfig)
 				.flatMap(Optional::stream)
 				.collect(Collectors.toList());
 	}
@@ -59,7 +61,7 @@ public class JobConfigService {
 		try {
 			return parseConfigFile(configLines);
 		} catch (RuntimeException e) {
-			LOG.error("Could not parse the config file '{}'. Contents: '{}'", configFile.getAbsolutePath());
+			LOG.error("Could not parse the config file '{}'. Contents: '{}'", configFile.getAbsolutePath(), String.join("\n", configLines));
 			LOG.info("Full Stacktrace:", e);
 			return Optional.empty();
 		}
@@ -82,7 +84,7 @@ public class JobConfigService {
 		final String xmlPayload = StringUtils.trim(String.join("\n", configLines));
 		LOG.info("XML payload: '{}'", xmlPayload);
 
-		final String regex = "^([\\w]+)\\s+([\\w\\/]+)\\?([\\w]+)=([\\w]+)$";
+		final String regex = "^(\\w+)\\s+([\\w/]+)\\?(\\w+)=(\\w+)$";
 		final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
 		final Matcher matcher = pattern.matcher(apiInfo);
 

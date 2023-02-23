@@ -86,7 +86,7 @@ POST /almaws/v1/conf/jobs/M502xxx?op=run
 </job>
 ```
 ## Where to get the configuration data
-* Name: just choose an fitting name
+* Name: just choose a fitting name
 * Cron expression: this defines when the job should run, use websites like https://crontab.guru or https://cronexpressiontogo.com
 * Method and Api URI: Use Alma. This information is provided when configuring a job. See: https://developers.exlibrisgroup.com/blog/working-with-the-alma-jobs-api/
 * XML Payload: Same as above
@@ -124,7 +124,7 @@ Build Docker image:
 ./mvnw package
 ```
 Push Docker image:<br>
-This needs authentication and is done via Github Workflow, using the Github Token from the workflow. If the image must be pushed otherwise, a Github PAT must be used.
+This needs authentication and is done via GitHub Workflow, using the GitHub Token from the workflow. If the image must be pushed otherwise, a GitHub PAT must be used.
 ```bash
 ./mvnw deploy
 ```
@@ -134,7 +134,7 @@ Test don't run automatically via Maven, because packaging is set to `docker`. To
 ./mvnw test -Pjar
 ```
 
-## Upgrade dependecies
+## Upgrade dependencies
 **Update Micronaut**<br>
 * Check the current version of Micronaut: [https://micronaut.io/download/](https://micronaut.io/download/)
 * Set the current Version in the `pom.xml` file in `parent > version` and in `properties > micronaut.version`

@@ -40,12 +40,12 @@ public class JobConfigServiceTest {
 
 		Assertions.assertEquals(1, jobConfigs.size());
 		JobConfig jobConfig = jobConfigs.get(0);
-		Assertions.assertEquals("test-name", jobConfig.getName());
-		Assertions.assertEquals("*/4 * * 3 *", jobConfig.getCronExpression());
-		Assertions.assertEquals("POST", jobConfig.getHttpMethod());
-		Assertions.assertEquals("/alma/api/test/path", jobConfig.getApiPath());
-		Assertions.assertEquals(Pair.of("op", "test"), jobConfig.getApiQuery());
-		Assertions.assertEquals("<xml>hello</xml>", jobConfig.getXmlPayload());
+		Assertions.assertEquals("test-name", jobConfig.name());
+		Assertions.assertEquals("*/4 * * 3 *", jobConfig.cronExpression());
+		Assertions.assertEquals("POST", jobConfig.httpMethod());
+		Assertions.assertEquals("/alma/api/test/path", jobConfig.apiPath());
+		Assertions.assertEquals(Pair.of("op", "test"), jobConfig.apiQuery());
+		Assertions.assertEquals("<xml>hello</xml>", jobConfig.xmlPayload());
 
 		testConfigFile.delete();
 		Files.delete(testWorkTree);

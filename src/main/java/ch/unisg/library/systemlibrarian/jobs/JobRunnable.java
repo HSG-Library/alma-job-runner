@@ -30,7 +30,7 @@ public class JobRunnable implements Runnable {
 
 	@Override
 	public void run() {
-		LOG.info("*** Running job '{}' ***", jobConfig.getName());
+		LOG.info("*** Running job '{}' ***", jobConfig.name());
 		final AlmaApiJobResponse response = almaApiHttpClient.sendJobRequest(jobConfig);
 		if (results.containsKey(jobConfig)) {
 			List<AlmaApiJobResponse> responses = results.get(jobConfig);
@@ -42,6 +42,6 @@ public class JobRunnable implements Runnable {
 			results.put(jobConfig, responses);
 		}
 		LOG.info("response: '{}'", response);
-		LOG.info("*** Job '{}' is done ***", jobConfig.getName());
+		LOG.info("*** Job '{}' is done ***", jobConfig.name());
 	}
 }

@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>ch.unisg.library.systemlibrarian</groupId>
   <artifactId>alma-job-runner</artifactId>
-  <version>0.2.0</version>
+  <version>0.2.1</version>
   <packaging>${packaging}</packaging>
 
   <parent>
@@ -217,10 +217,6 @@
           </from>
           <to>
             <image>ghcr.io/hsg-library/alma-job-runner</image>
-            <auth>
-              <username>${env.REGISTRY_USERNAME}</username>
-              <password>${env.REGISTRY_PASSWORD}</password>
-            </auth>
             <tags>${project.version}</tags>
           </to>
         </configuration>
