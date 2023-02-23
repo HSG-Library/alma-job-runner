@@ -217,6 +217,10 @@
           </from>
           <to>
             <image>ghcr.io/hsg-library/alma-job-runner</image>
+            <auth>
+              <username>${env.REGISTRY_USERNAME}</username>
+              <password>${env.REGISTRY_PASSWORD}</password>
+            </auth>
             <tags>${project.version}</tags>
           </to>
         </configuration>
