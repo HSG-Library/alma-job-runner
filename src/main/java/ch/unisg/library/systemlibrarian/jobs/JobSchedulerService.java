@@ -1,5 +1,17 @@
 package ch.unisg.library.systemlibrarian.jobs;
 
+import ch.unisg.library.systemlibrarian.api.AlmaApiHttpClient;
+import ch.unisg.library.systemlibrarian.api.models.AlmaApiJobResponse;
+import ch.unisg.library.systemlibrarian.api.models.CommonResponse;
+import ch.unisg.library.systemlibrarian.cron.CronValidatorService;
+import ch.unisg.library.systemlibrarian.git.GitService;
+import ch.unisg.library.systemlibrarian.git.TempDirectoryService;
+import io.micronaut.scheduling.TaskScheduler;
+import jakarta.inject.Singleton;
+import org.eclipse.jgit.api.Git;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
@@ -8,18 +20,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
-
-import org.eclipse.jgit.api.Git;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import ch.unisg.library.systemlibrarian.api.AlmaApiHttpClient;
-import ch.unisg.library.systemlibrarian.api.models.AlmaApiJobResponse;
-import ch.unisg.library.systemlibrarian.cron.CronValidatorService;
-import ch.unisg.library.systemlibrarian.git.GitService;
-import ch.unisg.library.systemlibrarian.git.TempDirectoryService;
-import io.micronaut.scheduling.TaskScheduler;
-import jakarta.inject.Singleton;
 
 @Singleton
 public class JobSchedulerService {
@@ -34,7 +34,7 @@ public class JobSchedulerService {
 	private final CronValidatorService cronValidatorService;
 
 	private Map<JobConfig, ScheduledFuture<?>> scheduledJobs;
-	private final ConcurrentHashMap<JobConfig, List<AlmaApiJobResponse>> results;
+	private final ConcurrentHashMap<JobConfig, List<CommonResponse<AlmaApiJobResponse>>> results;
 
 	public JobSchedulerService(
 			final TaskScheduler taskScheduler,
@@ -72,7 +72,7 @@ public class JobSchedulerService {
 		return scheduledJobs.keySet();
 	}
 
-	public Map<JobConfig, List<AlmaApiJobResponse>> getResults() {
+	public Map<JobConfig, List<CommonResponse<AlmaApiJobResponse>>> getResults() {
 		return results;
 	}
 

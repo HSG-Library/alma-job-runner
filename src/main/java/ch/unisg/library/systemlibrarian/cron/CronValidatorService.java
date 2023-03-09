@@ -1,17 +1,19 @@
 package ch.unisg.library.systemlibrarian.cron;
 
-import java.lang.invoke.MethodHandles;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.cronutils.descriptor.CronDescriptor;
 import com.cronutils.model.Cron;
 import com.cronutils.model.CronType;
 import com.cronutils.model.definition.CronDefinitionBuilder;
+import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
-
 import jakarta.inject.Singleton;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Singleton
 public class CronValidatorService {
@@ -37,6 +39,14 @@ public class CronValidatorService {
 		Cron cron = parseCronExpression(cronExpression);
 		CronDescriptor descriptor = CronDescriptor.instance();
 		return descriptor.describe(cron);
+	}
+
+	public String nextExecution(String cronExpression) {
+		Cron cron = parseCronExpression(cronExpression);
+		ExecutionTime executionTime = ExecutionTime.forCron(cron);
+		return executionTime.nextExecution(ZonedDateTime.now())
+				.map(zonedDateTime -> zonedDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE) + " " + zonedDateTime.format(DateTimeFormatter.ISO_DATE_TIME))
+				.orElse(StringUtils.EMPTY);
 	}
 
 	private Cron parseCronExpression(String cronExpression) {

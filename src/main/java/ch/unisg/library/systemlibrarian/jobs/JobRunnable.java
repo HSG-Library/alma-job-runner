@@ -1,15 +1,15 @@
 package ch.unisg.library.systemlibrarian.jobs;
 
+import ch.unisg.library.systemlibrarian.api.AlmaApiHttpClient;
+import ch.unisg.library.systemlibrarian.api.models.AlmaApiJobResponse;
+import ch.unisg.library.systemlibrarian.api.models.CommonResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import ch.unisg.library.systemlibrarian.api.AlmaApiHttpClient;
-import ch.unisg.library.systemlibrarian.api.models.AlmaApiJobResponse;
 
 public class JobRunnable implements Runnable {
 
@@ -17,12 +17,12 @@ public class JobRunnable implements Runnable {
 
 	private final JobConfig jobConfig;
 	private final AlmaApiHttpClient almaApiHttpClient;
-	private final ConcurrentHashMap<JobConfig, List<AlmaApiJobResponse>> results;
+	private final ConcurrentHashMap<JobConfig, List<CommonResponse<AlmaApiJobResponse>>> results;
 
 	public JobRunnable(
 			final JobConfig jobConfig,
 			final AlmaApiHttpClient almaApiHttpClient,
-			final ConcurrentHashMap<JobConfig, List<AlmaApiJobResponse>> results) {
+			final ConcurrentHashMap<JobConfig, List<CommonResponse<AlmaApiJobResponse>>> results) {
 		this.jobConfig = jobConfig;
 		this.almaApiHttpClient = almaApiHttpClient;
 		this.results = results;
@@ -31,16 +31,15 @@ public class JobRunnable implements Runnable {
 	@Override
 	public void run() {
 		LOG.info("*** Running job '{}' ***", jobConfig.name());
-		final AlmaApiJobResponse response = almaApiHttpClient.sendJobRequest(jobConfig);
+		final CommonResponse<AlmaApiJobResponse> response = almaApiHttpClient.sendJobRequest(jobConfig);
+		List<CommonResponse<AlmaApiJobResponse>> responses;
 		if (results.containsKey(jobConfig)) {
-			List<AlmaApiJobResponse> responses = results.get(jobConfig);
-			responses.add(response);
-			results.put(jobConfig, responses);
+			responses = results.get(jobConfig);
 		} else {
-			List<AlmaApiJobResponse> responses = new ArrayList<>();
-			responses.add(response);
-			results.put(jobConfig, responses);
+			responses = new ArrayList<>();
 		}
+		responses.add(response);
+		results.put(jobConfig, responses);
 		LOG.info("response: '{}'", response);
 		LOG.info("*** Job '{}' is done ***", jobConfig.name());
 	}
