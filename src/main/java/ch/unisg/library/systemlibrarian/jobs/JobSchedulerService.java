@@ -29,7 +29,7 @@ public class JobSchedulerService {
 	private final TaskScheduler taskScheduler;
 	private final JobConfigService jobConfigService;
 	private final GitService gitService;
-	private final TempDirectoryService gitDirectoryService;
+	private final TempDirectoryService tempDirectoryService;
 	private final AlmaApiHttpClient almaApiHttpClient;
 	private final CronValidatorService cronValidatorService;
 
@@ -39,13 +39,13 @@ public class JobSchedulerService {
 	public JobSchedulerService(
 			final TaskScheduler taskScheduler,
 			final GitService gitService,
-			final TempDirectoryService gitDirectoryService,
+			final TempDirectoryService tempDirectoryService,
 			final JobConfigService jobConfigService,
 			final AlmaApiHttpClient almaApiHttpClient,
 			final CronValidatorService cronValidatorService) {
 		this.taskScheduler = taskScheduler;
 		this.gitService = gitService;
-		this.gitDirectoryService = gitDirectoryService;
+		this.tempDirectoryService = tempDirectoryService;
 		this.jobConfigService = jobConfigService;
 		this.almaApiHttpClient = almaApiHttpClient;
 		this.cronValidatorService = cronValidatorService;
@@ -82,10 +82,13 @@ public class JobSchedulerService {
 	}
 
 	private List<JobConfig> getJobConfigs() {
-		final File cloneDir = gitDirectoryService.createTempCloneDirectory();
+		final File cloneDir = tempDirectoryService.createTempCloneDirectory();
 		final Git configRepo = gitService.cloneRepo(cloneDir);
 		final File workTree = getWorkTree(configRepo);
-		return jobConfigService.getJobConfigs(workTree);
+		final List<JobConfig> jobConfigs = jobConfigService.getJobConfigs(workTree);
+		configRepo.close();
+		tempDirectoryService.removeTempCloneDirectory(cloneDir);
+		return jobConfigs;
 	}
 
 	private File getWorkTree(Git configRepo) {
@@ -94,7 +97,7 @@ public class JobSchedulerService {
 
 	private void registerJob(final JobConfig jobConfig) {
 		LOG.info("Register job '{}' with cron expression '{}', '{}'", jobConfig.name(), jobConfig.cronExpression(), cronValidatorService.describe(jobConfig.cronExpression()));
-		ScheduledFuture<?> scheduledJob = taskScheduler.schedule(jobConfig.cronExpression(), new JobRunnable(jobConfig, almaApiHttpClient, results));
+		final ScheduledFuture<?> scheduledJob = taskScheduler.schedule(jobConfig.cronExpression(), new JobRunnable(jobConfig, almaApiHttpClient, results));
 		scheduledJobs.put(jobConfig, scheduledJob);
 	}
 }
