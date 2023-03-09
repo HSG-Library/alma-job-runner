@@ -1,18 +1,17 @@
 package ch.unisg.library.systemlibrarian.git;
 
+import io.micronaut.context.annotation.Prototype;
+import jakarta.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
-
-@Singleton
+@Prototype
 public class TempDirectoryService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

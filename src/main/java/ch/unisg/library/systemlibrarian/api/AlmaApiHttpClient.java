@@ -4,11 +4,11 @@ import ch.unisg.library.systemlibrarian.api.models.AlmaApiJobResponse;
 import ch.unisg.library.systemlibrarian.api.models.CommonResponse;
 import ch.unisg.library.systemlibrarian.api.models.ResponseStatus;
 import ch.unisg.library.systemlibrarian.jobs.JobConfig;
+import io.micronaut.context.annotation.Prototype;
 import io.micronaut.http.*;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.exceptions.HttpClientResponseException;
 import io.micronaut.http.uri.UriBuilder;
-import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +16,7 @@ import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.util.Optional;
 
-@Singleton
+@Prototype
 public class AlmaApiHttpClient {
 
 	private static final String API_KEY_PARAMETER = "apiKey";

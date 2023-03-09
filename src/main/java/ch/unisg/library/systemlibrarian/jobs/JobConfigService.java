@@ -1,5 +1,12 @@
 package ch.unisg.library.systemlibrarian.jobs;
 
+import ch.unisg.library.systemlibrarian.cron.CronValidatorService;
+import io.micronaut.context.annotation.Prototype;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -13,15 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import ch.unisg.library.systemlibrarian.cron.CronValidatorService;
-import jakarta.inject.Singleton;
-
-@Singleton
+@Prototype
 public class JobConfigService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
