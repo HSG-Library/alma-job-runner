@@ -32,9 +32,8 @@ public class JobSchedulerService {
 	private final TempDirectoryService tempDirectoryService;
 	private final AlmaApiHttpClient almaApiHttpClient;
 	private final CronValidatorService cronValidatorService;
-
-	private Map<JobConfig, ScheduledFuture<?>> scheduledJobs;
 	private final ConcurrentHashMap<JobConfig, List<CommonResponse<AlmaApiJobResponse>>> results;
+	private Map<JobConfig, ScheduledFuture<?>> scheduledJobs;
 
 	public JobSchedulerService(
 			final TaskScheduler taskScheduler,
