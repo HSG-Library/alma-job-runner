@@ -73,7 +73,7 @@ public class AlmaApiHttpClientTest {
 
 		System.out.println(sendJobRequest);
 		Assertions.assertEquals(ResponseStatus.ERROR, sendJobRequest.responseStatus());
-		Assertions.assertEquals(400, sendJobRequest.code());
+		Assertions.assertEquals(400, sendJobRequest.httpStatus().getCode());
 		// make sure, that on a failure there is an attempt to send a notification
 		Mockito.verify(notificationSenderService, Mockito.times(1)).send(Mockito.any(NotificationMessage.class));
 		mock.close();

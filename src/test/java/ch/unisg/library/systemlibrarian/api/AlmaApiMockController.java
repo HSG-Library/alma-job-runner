@@ -37,7 +37,9 @@ public class AlmaApiMockController {
 		this.resourceLoader = resourceLoader;
 	}
 
-	@Get(value = "{path:.*}", consumes = {
+	@Get(value = "{path:.*}", produces = {
+			MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN
+	}, consumes = {
 			MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON
 	})
 	public HttpResponse<String> catchallGet(String path) {
@@ -47,7 +49,9 @@ public class AlmaApiMockController {
 				.orElseGet(() -> HttpResponse.status(getStatus()));
 	}
 
-	@Post(value = "{path:.*}", consumes = {
+	@Post(value = "{path:.*}", produces = {
+			MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN
+	}, consumes = {
 			MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON
 	})
 	public HttpResponse<String> catchallPost(String path, @Body String payload) {

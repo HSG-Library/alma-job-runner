@@ -18,7 +18,7 @@ class NotificationMessageProviderTest {
 	void testRequestFailedMessage() {
 		final HttpResponse<?> response = HttpResponse.badRequest();
 		final JobConfig jobConfig = new JobConfig("Test-Job name", "* * * * *", "POST", "/api/path", Pair.of("op", "run"), "payload");
-		NotificationMessage message = messageProvider.requestFailed(response, jobConfig);
+		NotificationMessage message = messageProvider.requestFailed(response.getStatus(), jobConfig);
 		final String expectedSubject = "[ALMA-JOB-RUNNER] Job Test-Job name failed to start";
 		final String expectedMessage = """
 				The Job 'Test-Job name' failed to start

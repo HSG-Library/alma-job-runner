@@ -40,25 +40,41 @@ public class AlmaApiHttpClient {
 		this.notificationSender = notificationSender;
 	}
 
+	public CommonResponse<String> apiHealthCheck() {
+		final URI uri = UriBuilder.of(almaApiConfig.getUrl())
+				.path("/almaws/v1/conf/test")
+				.queryParam(API_KEY_PARAMETER, almaApiConfig.getKey())
+				.build();
+		final MutableHttpRequest<?> request = HttpRequest.GET(uri)
+				.accept(MediaType.APPLICATION_XML);
+		return send(request, String.class);
+	}
+
 	public CommonResponse<AlmaApiJobResponse> sendJobRequest(JobConfig jobConfig) {
-		URI uri = createRequestUri(jobConfig);
-		MutableHttpRequest<String> request = HttpRequest.create(HttpMethod.parse(jobConfig.httpMethod()), uri.toString())
+		final URI uri = createRequestUri(jobConfig);
+		final MutableHttpRequest<String> request = HttpRequest.create(HttpMethod.parse(jobConfig.httpMethod()), uri.toString())
 				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_XML)
 				.body(jobConfig.xmlPayload());
 		LOG.info("Request for job '{}': '{}'", jobConfig.name(), request.toString());
+		final CommonResponse<AlmaApiJobResponse> response = send(request, AlmaApiJobResponse.class);
+		if (ResponseStatus.ERROR.equals(response.responseStatus())) {
+			notificationSender.send(messageProvider.requestFailed(response.httpStatus(), jobConfig));
+		}
+		return response;
+	}
 
+	private <T> CommonResponse<T> send(HttpRequest<?> request, Class<T> responseType) {
 		try {
-			final HttpResponse<AlmaApiJobResponse> httpResponse = httpClient.toBlocking().exchange(request, AlmaApiJobResponse.class);
-			final AlmaApiJobResponse apiResponse = httpResponse.getBody()
+			final HttpResponse<T> httpResponse = httpClient.toBlocking().exchange(request, responseType);
+			final T apiResponse = httpResponse.getBody()
 					.orElseThrow(() -> new HttpClientResponseException("Response not serializable or Empty", httpResponse));
-			return new CommonResponse<>(httpResponse.code(), ResponseStatus.SUCCESS, httpResponse.status().getReason(), Optional.of(apiResponse));
+			return new CommonResponse<>(httpResponse.getStatus(), ResponseStatus.SUCCESS, httpResponse.status().getReason(), Optional.of(apiResponse));
 		} catch (HttpClientResponseException e) {
 			final HttpResponse<?> httpResponse = e.getResponse();
-			LOG.error("Request not successful. HTTP Status Code: '{} {}', URI: '{}'", httpResponse.getStatus().getCode(), httpResponse.status().getReason(), uri);
+			LOG.error("Request not successful. HTTP Status Code: '{} {}', URI: '{}'", httpResponse.getStatus().getCode(), httpResponse.status().getReason(), request.getUri());
 			LOG.info("Full Stacktrace: ", e);
-			notificationSender.send(messageProvider.requestFailed(httpResponse, jobConfig));
-			return new CommonResponse<>(httpResponse.code(), ResponseStatus.ERROR, httpResponse.getStatus().getReason(), Optional.empty());
+			return new CommonResponse<>(httpResponse.getStatus(), ResponseStatus.ERROR, httpResponse.getStatus().getReason(), Optional.empty());
 		}
 	}
 
