@@ -12,13 +12,10 @@ public interface GitConfig {
 	String getRepoSSH();
 
 	@Bindable
-	String getBranch();
-
-	@Bindable
 	String getTempCloneDirPrefix();
 
 	/*
-	 * The private key must be provided environment variable:
+	 * The private key must be provided as environment variable:
 	 * GIT_PRIVATE_KEY_BASE64="VGhpcyBpcyBhIHRlc3Qgc3RyaW5n"
 	 *
 	 * (provide as one single line, base64 encoded)
