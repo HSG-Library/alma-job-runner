@@ -11,6 +11,7 @@ The app needs three environment variables to run:
 * `GIT_PRIVATE_KEY_BASE64`: this is the private SSH key encoded with Base64, needed to authenticate when cloning the config repo (more on this later), something like `"LS0tLS1CRUdJTiBPUEVOU1NIIFBSSVZBVEUgS0VZLS0tLS0KYjN
 CbGJuTnphQzFyWlhrdGRqRUFBQUFBQkc1dmJtVUFBQUFFYm05dVpRQUFBQUFBQUFBQkFBQUFNd0FBQUF0emMyZ3RaVwpReU5UVXhPUUFBQUNBSTFGMzdNdWJrRWRoT20yYS"`. The Base64 encoding is needed to avoid issues with newlines when passing environment variables to Docker.
 * `ALMA_API_KEY`: this is the Alma API key needed to start the jobs. The key needs write permission to the 'Configuration' area.
+* `ALMA_API_URL`: this is the base URL for the Alma API (e.g. `https://api-eu.hosted.exlibrisgroup.com/`)
 
 ## Run the app
 The app is available as Docker image.
@@ -20,6 +21,7 @@ Run the Docker container, [Docker](https://www.docker.com/) must be installed:
 export GIT_REPO_SSH="git@github.com:your/config-repo.git"
 export GIT_PRIVATE_KEY_BASE64="<base64-of-your-private-key>"
 export ALMA_API_KEY="your-alma-api-key"
+export ALMA_API_URL="https://api-eu.hosted.exlibrisgroup.com/"
 
 docker run -i -p 8080:8080 --env GIT_REPO_SSH=$GIT_REPO_SSH --env GIT_PRIVATE_KEY_BASE64=$GIT_PRIVATE_KEY_BASE64 --env ALMA_API_KEY=$ALMA_API_KEY ghcr.io/hsg-library/alma-job-runner
 ```
@@ -113,7 +115,8 @@ Add the following command to your `launch.json`:
     "env": {
         "GIT_REPO_SSH": "git@github.com:your/config-repo",
         "GIT_PRIVATE_KEY_BASE64": "<base64 of your private key>",
-        "ALMA_API_KEY": "YOUR-ALMA-API-KEY"
+        "ALMA_API_KEY": "YOUR-ALMA-API-KEY",
+        "ALMA_API_URL": "https://api-eu.hosted.exlibrisgroup.com/",
     }
 }
 ```
