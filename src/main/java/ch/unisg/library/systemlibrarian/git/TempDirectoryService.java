@@ -42,7 +42,7 @@ public class TempDirectoryService {
 						.map(Path::toFile)
 						.forEach(file -> {
 							final boolean status = file.delete();
-							LOG.info("Deleted '{}', status '{}'", file, status);
+							LOG.debug("Deleted '{}', status '{}'", file, status);
 						});
 			} catch (IOException e) {
 				throw new RuntimeException(e);
