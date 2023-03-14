@@ -4,6 +4,8 @@ import ch.unisg.library.systemlibrarian.api.models.AlmaApiJobResponse;
 import ch.unisg.library.systemlibrarian.api.models.CommonResponse;
 import ch.unisg.library.systemlibrarian.api.models.ResponseStatus;
 import ch.unisg.library.systemlibrarian.jobs.JobConfig;
+import ch.unisg.library.systemlibrarian.notification.NotificationMessageProvider;
+import ch.unisg.library.systemlibrarian.notification.NotificationSenderService;
 import io.micronaut.context.annotation.Prototype;
 import io.micronaut.http.*;
 import io.micronaut.http.client.HttpClient;
@@ -24,10 +26,18 @@ public class AlmaApiHttpClient {
 
 	private final AlmaApiConfig almaApiConfig;
 	private final HttpClient httpClient;
+	private final NotificationMessageProvider messageProvider;
+	private final NotificationSenderService notificationSender;
 
-	public AlmaApiHttpClient(AlmaApiConfig almaApiConfig, HttpClient httpClient) {
+	public AlmaApiHttpClient(
+			final AlmaApiConfig almaApiConfig,
+			final HttpClient httpClient,
+			final NotificationMessageProvider messageProvider,
+			final NotificationSenderService notificationSender) {
 		this.almaApiConfig = almaApiConfig;
 		this.httpClient = httpClient;
+		this.messageProvider = messageProvider;
+		this.notificationSender = notificationSender;
 	}
 
 	public CommonResponse<AlmaApiJobResponse> sendJobRequest(JobConfig jobConfig) {
@@ -47,6 +57,7 @@ public class AlmaApiHttpClient {
 			final HttpResponse<?> httpResponse = e.getResponse();
 			LOG.error("Request not successful. HTTP Status Code: '{} {}', URI: '{}'", httpResponse.getStatus().getCode(), httpResponse.status().getReason(), uri);
 			LOG.info("Full Stacktrace: ", e);
+			notificationSender.send(messageProvider.requestFailed(httpResponse, jobConfig));
 			return new CommonResponse<>(httpResponse.code(), ResponseStatus.ERROR, httpResponse.getStatus().getReason(), Optional.empty());
 		}
 	}

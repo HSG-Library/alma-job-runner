@@ -8,3 +8,7 @@ netty:
 
 git:
   temp-clone-dir-prefix: "alma-conf"
+
+notification:
+  active: false
+  smtp-port: 587

@@ -4,19 +4,38 @@ registers a cron job for every configuration file.
 When the cron expressions triggers, the job is started via an Alma API call.
 
 # How to configure and run the app
-## App Configuration
-The app needs three environment variables to run:
 
-* `GIT_REPO_SSH`: this is the connection to the Git repo with the job config files (more on this later), something like `git@github.com:HSG-Library/alma-job-runner-config.git`
-* `GIT_PRIVATE_KEY_BASE64`: this is the private SSH key encoded with Base64, needed to authenticate when cloning the config repo (more on this later), something like `"LS0tLS1CRUdJTiBPUEVOU1NIIFBSSVZBVEUgS0VZLS0tLS0KYjN
-CbGJuTnphQzFyWlhrdGRqRUFBQUFBQkc1dmJtVUFBQUFFYm05dVpRQUFBQUFBQUFBQkFBQUFNd0FBQUF0emMyZ3RaVwpReU5UVXhPUUFBQUNBSTFGMzdNdWJrRWRoT20yYS"`. The Base64 encoding is needed to avoid issues with newlines when passing environment variables to Docker.
-* `ALMA_API_KEY`: this is the Alma API key needed to start the jobs. The key needs write permission to the 'Configuration' area.
+## App Configuration
+
+The app needs the following environment variables to run:
+
+* `GIT_REPO_SSH`: this is the connection to the Git repo with the job config files (more on this later), something
+  like `git@github.com:HSG-Library/alma-job-runner-config.git`
+* `GIT_PRIVATE_KEY_BASE64`: this is the private SSH key encoded with Base64, needed to authenticate when cloning the
+  config repo (more on this later), something like `"LS0tLS1CRUdJTiBPUEVOU1NIIFBSSVZBVEUgS0VZLS0tLS0KYjN
+  CbGJuTnphQzFyWlhrdGRqRUFBQUFBQkc1dmJtVUFBQUFFYm05dVpRQUFBQUFBQUFBQkFBQUFNd0FBQUF0emMyZ3RaVwpReU5UVXhPUUFBQUNBSTFGMzdNdWJrRWRoT20yYS"`.
+  The Base64 encoding is needed to avoid issues with newlines when passing environment variables to Docker.
+* `ALMA_API_KEY`: this is the Alma API key needed to start the jobs. The key needs write permission to the '
+  Configuration' area.
 * `ALMA_API_URL`: this is the base URL for the Alma API (e.g. `https://api-eu.hosted.exlibrisgroup.com/`)
 
+To enable notification emails on jobs which failed to start, the following environment variables are needed:
+
+* `NOTIFICATION_ACTIVE`: 'true'/'false', enable/disable notifications, default is disabled. If notifications are enabled, the following variables are needed too.
+* `NOTIFICATION_SMTP_SERVER`: something like `smpt.yourdomain.com`
+* `NOTIFICATION_SMTP_PORT`: the port of your SMTP server, default is `587`
+* `NOTIFICATION_SMTP_USER`: user for the SMTP authentication 
+* `NOTIFICATION_SMTP_PASSWORD`: password for the SMTP authentication
+* `NOTIFICATION_TO_ADDRESS`: recipient address of the notification email, comma separated lists of addresses are possible
+* `NOTIFICATION_FROM_ADDRESS`: sender address of the notification email
+
+Note, the SMTP server must support TLS (activated by default).
+
 ## Run the app
+
 The app is available as Docker image.
 
-Run the Docker container, [Docker](https://www.docker.com/) must be installed:
+Run the Docker container, [Docker](https://www.docker.com/) must be installed (note that the notifications are not configured in this example):
 ```bash
 export GIT_REPO_SSH="git@github.com:your/config-repo.git"
 export GIT_PRIVATE_KEY_BASE64="<base64-of-your-private-key>"
