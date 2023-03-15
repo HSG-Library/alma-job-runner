@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Alma-Job-Runner - Job Results</title>
+	{{>views/head-partial}}
+</head>
+<body>
+{{>views/nav-partial}}
+<main>
+	<h1>Job Results</h1>
+	{{#each results as |runs|}}
+		<h2>{{@key}}</h2>
+		<table>
+			<thead>
+			<tr>
+				<th style="width: 100px">Date</th>
+				<th style="width: 80px">Status</th>
+				<th style="min-width: 75px">Message</th>
+				<th style="width: 70px">Job ID</th>
+				<th>Instance</th>
+				<th>Instance Link</th>
+			</tr>
+			</thead>
+			<tbody>
+		{{#each runs as |result|}}
+			<tr>
+				<td>{{result.date}}</td>
+				<td><span class="badge {{result.status}}">{{result.status}}</span></td>
+				<td>{{result.message}}</td>
+				<td>{{result.id}}</td>
+				<td>{{result.jobInstanceValue}}</td>
+				<td>{{result.jobInstanceLink}}</td>
+			</tr>
+		{{/each}}
+			</tbody>
+		</table>
+	{{/each}}
+</main>
+</body>
+</html>

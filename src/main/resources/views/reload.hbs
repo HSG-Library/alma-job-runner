@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Alma-Job-Runner - Reload Jobs</title>
+	{{>views/head-partial}}
+</head>
+<body>
+{{>views/nav-partial}}
+<main>
+	<h1>Registered Jobs</h1>
+	<table>
+		<thead>
+		<tr>
+			<th>Job Name</th>
+			<th>Cron Expression</th>
+			<th>Cron Description</th>
+		</tr>
+		</thead>
+		<tbody>
+		{{#each jobInfoList}}
+			<tr>
+				<td>{{this.name}}</td>
+				<td>{{this.cronExpression}}</td>
+				<td>{{this.cronDescription}}</td>
+			</tr>
+		{{/each}}
+		</tbody>
+	</table>
+</main>
+</body>
+</html>

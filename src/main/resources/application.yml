@@ -1,6 +1,15 @@
 micronaut:
   application:
     name: almaJobRunner
+  router:
+    static-resources:
+      default:
+        enabled: true
+        mapping: "/assets/**"
+        paths: "classpath:views/assets"
+  server:
+    http-version: 2.0
+
 netty:
   default:
     allocator:

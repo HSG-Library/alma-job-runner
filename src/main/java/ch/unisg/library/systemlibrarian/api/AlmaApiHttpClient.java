@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Prototype
@@ -69,12 +70,12 @@ public class AlmaApiHttpClient {
 			final HttpResponse<T> httpResponse = httpClient.toBlocking().exchange(request, responseType);
 			final T apiResponse = httpResponse.getBody()
 					.orElseThrow(() -> new HttpClientResponseException("Response not serializable or Empty", httpResponse));
-			return new CommonResponse<>(httpResponse.getStatus(), ResponseStatus.SUCCESS, httpResponse.status().getReason(), Optional.of(apiResponse));
+			return new CommonResponse<>(httpResponse.getStatus(), ResponseStatus.SUCCESS, httpResponse.status().getReason(), LocalDateTime.now(), Optional.of(apiResponse));
 		} catch (HttpClientResponseException e) {
 			final HttpResponse<?> httpResponse = e.getResponse();
 			LOG.error("Request not successful. HTTP Status Code: '{} {}', URI: '{}'", httpResponse.getStatus().getCode(), httpResponse.status().getReason(), request.getUri());
 			LOG.info("Full Stacktrace: ", e);
-			return new CommonResponse<>(httpResponse.getStatus(), ResponseStatus.ERROR, httpResponse.getStatus().getReason(), Optional.empty());
+			return new CommonResponse<>(httpResponse.getStatus(), ResponseStatus.ERROR, httpResponse.getStatus().getReason(), LocalDateTime.now(), Optional.empty());
 		}
 	}
 

@@ -74,6 +74,10 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>io.micronaut.views</groupId>
+      <artifactId>micronaut-views-handlebars</artifactId>
+    </dependency>
+    <dependency>
       <groupId>jakarta.annotation</groupId>
       <artifactId>jakarta.annotation-api</artifactId>
       <scope>compile</scope>

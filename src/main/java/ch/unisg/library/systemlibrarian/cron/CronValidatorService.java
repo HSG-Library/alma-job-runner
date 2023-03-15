@@ -19,6 +19,8 @@ import java.time.format.DateTimeFormatter;
 public class CronValidatorService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
 
 	public boolean isValid(String cronExpression) {
 		try {
@@ -45,7 +47,7 @@ public class CronValidatorService {
 		Cron cron = parseCronExpression(cronExpression);
 		ExecutionTime executionTime = ExecutionTime.forCron(cron);
 		return executionTime.nextExecution(ZonedDateTime.now())
-				.map(zonedDateTime -> zonedDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE) + " " + zonedDateTime.format(DateTimeFormatter.ISO_DATE_TIME))
+				.map(zonedDateTime -> zonedDateTime.format(DATE_TIME_FORMATTER))
 				.orElse(StringUtils.EMPTY);
 	}
 

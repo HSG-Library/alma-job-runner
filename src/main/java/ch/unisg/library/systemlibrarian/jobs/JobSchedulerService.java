@@ -52,10 +52,11 @@ public class JobSchedulerService {
 		this.results = new ConcurrentHashMap<>();
 	}
 
-	public void registerAllJobs() {
+	public Set<JobConfig> registerAllJobs() {
 		List<JobConfig> jobConfigs = getJobConfigs();
 		LOG.info("Register '{}' jobs", jobConfigs.size());
 		jobConfigs.forEach(this::registerJob);
+		return scheduledJobs.keySet();
 	}
 
 	public void unregisterAllJobs() {
@@ -75,9 +76,9 @@ public class JobSchedulerService {
 		return results;
 	}
 
-	public void reRegisterAllJobs() {
+	public Set<JobConfig> reRegisterAllJobs() {
 		unregisterAllJobs();
-		registerAllJobs();
+		return registerAllJobs();
 	}
 
 	private List<JobConfig> getJobConfigs() {

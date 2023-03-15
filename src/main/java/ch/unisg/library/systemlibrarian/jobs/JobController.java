@@ -1,65 +1,70 @@
 package ch.unisg.library.systemlibrarian.jobs;
 
-import ch.unisg.library.systemlibrarian.api.models.AlmaApiJobResponse;
-import ch.unisg.library.systemlibrarian.api.models.CommonResponse;
-import ch.unisg.library.systemlibrarian.cron.CronValidatorService;
+import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
+import io.micronaut.views.View;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller("/jobs")
 public class JobController {
 
 	private final JobSchedulerService jobSchedulerService;
-	private final CronValidatorService cronValidatorService;
+	private final JobDataTransformerService jobDataTransformerService;
 
-	public JobController(JobSchedulerService jobService, CronValidatorService cronValidatorService) {
+	public JobController(
+			final JobSchedulerService jobService,
+			final JobDataTransformerService jobDataTransformerService) {
 		this.jobSchedulerService = jobService;
-		this.cronValidatorService = cronValidatorService;
+		this.jobDataTransformerService = jobDataTransformerService;
 	}
 
-	@Get("/register")
-	public List<String> register() {
-		jobSchedulerService.reRegisterAllJobs();
-		return List.of("register done");
-	}
-
+	@View("unregister")
 	@Get("/unregister")
-	public List<String> unregister() {
+	public String unregister() {
 		jobSchedulerService.unregisterAllJobs();
-		return List.of("unregister done");
+		return "Unregistered";
 	}
 
-	@Get("/reregister")
-	public List<String> reregister() {
-		jobSchedulerService.reRegisterAllJobs();
-		return List.of("reregister done");
+	@View("reload")
+	@Get("/reload")
+	public HttpResponse<Map<String, Set<JobInfo>>> reregister() {
+		final Set<JobInfo> jobInfo = jobSchedulerService.reRegisterAllJobs().stream()
+				.map(jobDataTransformerService::toJobInfo)
+				.collect(Collectors.toSet());
+		return HttpResponse.ok().body(Map.of(
+						"jobInfoList", jobInfo
+				)
+		);
 	}
 
+	@View("list")
 	@Get("/list")
-	public List<String> list() {
-		return jobSchedulerService.getScheduledJobs().stream()
-				.map(this::getJobListInfo)
-				.collect(Collectors.toList());
+	public HttpResponse<Map<String, Set<JobInfo>>> list() {
+		final Set<JobInfo> jobInfo = jobSchedulerService.getScheduledJobs().stream()
+				.map(jobDataTransformerService::toJobInfo)
+				.collect(Collectors.toSet());
+		return HttpResponse.ok().body(Map.of(
+						"jobInfoList", jobInfo
+				)
+		);
 	}
 
-	private String getJobListInfo(JobConfig jobConfig) {
-		return jobConfig.name() +
-				" - " +
-				jobConfig.cronExpression() +
-				" (" +
-				cronValidatorService.describe(jobConfig.cronExpression()) +
-				" next execution: " +
-				cronValidatorService.nextExecution(jobConfig.cronExpression()) +
-				")";
-	}
-
+	@View("results")
 	@Get("/results")
-	public Map<String, List<CommonResponse<AlmaApiJobResponse>>> results() {
-		return jobSchedulerService.getResults().entrySet().stream()
-				.collect(Collectors.toMap(e -> e.getKey().name(), Map.Entry::getValue));
+	public HttpResponse<Map<String, Map<String, List<JobResultInfo>>>> results() {
+		final Map<String, List<JobResultInfo>> results = jobSchedulerService.getResults().entrySet().stream()
+				.map(entry -> Pair.of(entry.getKey().name(), entry.getValue().stream().map(jobDataTransformerService::toJobResultInfo).collect(Collectors.toList())))
+				.collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+
+		return HttpResponse.ok().body(Map.of(
+						"results", results
+				)
+		);
 	}
 }
