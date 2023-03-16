@@ -30,6 +30,12 @@ public class HealthController {
 
 	@Get(value = "/health", produces = MediaType.TEXT_PLAIN)
 	public HttpResponse<String> health() {
+		LOG.info("Health endpoint called, health OK");
+		return HttpResponse.ok("OK");
+	}
+
+	@Get(value = "/status", produces = MediaType.TEXT_PLAIN)
+	public HttpResponse<String> status() {
 		final List<String> issues = new ArrayList<>();
 		if (ResponseStatus.ERROR == almaApiHttpClient.apiHealthCheck().responseStatus()) {
 			issues.add("Alma API not available");

@@ -39,7 +39,14 @@ class HealthControllerTest {
 	}
 
 	@Test
-	void testHealthOk() {
+	void testHealth(){
+		HttpResponse<String> exchange = client.toBlocking().exchange(HttpRequest.GET("/health"), String.class);
+		Assertions.assertEquals(200, exchange.code());
+		Assertions.assertEquals("OK", exchange.body());
+	}
+
+	@Test
+	void testStatusOk() {
 		// mock Alma API, with response healthy
 		EmbeddedServer almaApiMockServer = ApplicationContext.run(
 				EmbeddedServer.class,
@@ -52,14 +59,14 @@ class HealthControllerTest {
 		);
 		// mock non empty joblist
 		Mockito.when(jobSchedulerService.getScheduledJobs()).thenReturn(Set.of(Mockito.mock(JobConfig.class)));
-		HttpResponse<String> exchange = client.toBlocking().exchange(HttpRequest.GET("/health"), String.class);
+		HttpResponse<String> exchange = client.toBlocking().exchange(HttpRequest.GET("/status"), String.class);
 		Assertions.assertEquals(200, exchange.code());
 		Assertions.assertEquals("OK", exchange.body());
 		almaApiMockServer.close();
 	}
 
 	@Test
-	void testHealthAlmaApiNotAvailable() {
+	void testStatusAlmaApiNotAvailable() {
 		// mock Alma API, with unsuccessful response
 		EmbeddedServer almaApiMockServer = ApplicationContext.run(
 				EmbeddedServer.class,
@@ -73,7 +80,7 @@ class HealthControllerTest {
 		// mock non empty joblist
 		Mockito.when(jobSchedulerService.getScheduledJobs()).thenReturn(Set.of(Mockito.mock(JobConfig.class)));
 		try {
-			client.toBlocking().exchange(HttpRequest.GET("/health"), String.class);
+			client.toBlocking().exchange(HttpRequest.GET("/status"), String.class);
 		} catch (HttpClientResponseException e) {
 			Assertions.assertEquals(500, e.getResponse().code());
 			Assertions.assertEquals("Alma API not available", e.getResponse().body());
@@ -82,7 +89,7 @@ class HealthControllerTest {
 	}
 
 	@Test
-	void testHealthNoJobs() {
+	void testStatusNoJobs() {
 		// mock Alma API, with response healthy
 		EmbeddedServer almaApiMockServer = ApplicationContext.run(
 				EmbeddedServer.class,
@@ -96,7 +103,7 @@ class HealthControllerTest {
 		// mock empty joblist
 		Mockito.when(jobSchedulerService.getScheduledJobs()).thenReturn(Set.of());
 		try {
-			client.toBlocking().exchange(HttpRequest.GET("/health"), String.class);
+			client.toBlocking().exchange(HttpRequest.GET("/status"), String.class);
 		} catch (HttpClientResponseException e) {
 			Assertions.assertEquals(500, e.getResponse().code());
 			Assertions.assertEquals("No jobs registered", e.getResponse().body());
