@@ -19,15 +19,15 @@
     <release.version>17</release.version>
     <micronaut.version>3.8.7</micronaut.version>
     <micronaut.runtime>netty</micronaut.runtime>
-    <jgit.ssh.version>6.5.0.202303070854-r</jgit.ssh.version>
-    <jsch.version>0.2.7</jsch.version>
-    <apache.commonslang3.version>3.12.0</apache.commonslang3.version>
-    <cron.utils.version>9.2.0</cron.utils.version>
-    <simple.java.mail.version>8.0.0</simple.java.mail.version>
-    <mockito.version>5.2.0</mockito.version>
-    <maven.versions.plugin.version>2.12.0</maven.versions.plugin.version>
-    <maven.enforcer.plugin.version>3.1.0</maven.enforcer.plugin.version>
-    <maven.jib.plugin.version>3.3.1</maven.jib.plugin.version>
+    <jgit.ssh.version>6.8.0.202311291450-r</jgit.ssh.version>
+    <jsch.version>0.2.15</jsch.version>
+    <apache.commonslang3.version>3.14.0</apache.commonslang3.version>
+    <cron.utils.version>9.2.1</cron.utils.version>
+    <simple.java.mail.version>8.5.1</simple.java.mail.version>
+    <mockito.version>5.8.0</mockito.version>
+    <maven.versions.plugin.version>2.16.2</maven.versions.plugin.version>
+    <maven.enforcer.plugin.version>3.4.1</maven.enforcer.plugin.version>
+    <maven.jib.plugin.version>3.4.0</maven.jib.plugin.version>
     <exec.mainClass>ch.unisg.library.systemlibrarian.Application</exec.mainClass>
   </properties>
 
