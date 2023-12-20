@@ -4,20 +4,25 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>ch.unisg.library.systemlibrarian</groupId>
   <artifactId>alma-job-runner</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <packaging>${packaging}</packaging>
 
+  <!--
+  Upgrade to Micronaut 4
+  https://micronaut.io/2023/05/09/upgrade-to-micronaut-framework-4-0-0/
+  (remove this note after v4 runs well)
+  -->
   <parent>
-    <groupId>io.micronaut</groupId>
+    <groupId>io.micronaut.platform</groupId>
     <artifactId>micronaut-parent</artifactId>
-    <version>3.8.7</version>
+    <version>4.2.2</version>
   </parent>
 
   <properties>
     <packaging>docker</packaging>
     <jdk.version>17</jdk.version>
     <release.version>17</release.version>
-    <micronaut.version>3.8.7</micronaut.version>
+    <micronaut.version>4.2.2</micronaut.version>
     <micronaut.runtime>netty</micronaut.runtime>
     <jgit.ssh.version>6.8.0.202311291450-r</jgit.ssh.version>
     <jsch.version>0.2.15</jsch.version>
@@ -54,7 +59,7 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>io.micronaut</groupId>
+      <groupId>io.micronaut.validation</groupId>
       <artifactId>micronaut-validation</artifactId>
       <scope>compile</scope>
     </dependency>
@@ -76,6 +81,11 @@
     <dependency>
       <groupId>io.micronaut.views</groupId>
       <artifactId>micronaut-views-handlebars</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>jakarta.annotation</groupId>
@@ -156,7 +166,7 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>io.micronaut.build</groupId>
+        <groupId>io.micronaut.maven</groupId>
         <artifactId>micronaut-maven-plugin</artifactId>
       </plugin>
 
