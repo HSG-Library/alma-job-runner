@@ -3,8 +3,10 @@ name: "CodeQL"
 on:
   push:
     branches: [ "main", "develop" ]
+    paths: ['src/**', 'pom.xml']
   pull_request:
     branches: [ "main" ]
+    paths: ['src/**', 'pom.xml']
   schedule:
     - cron: '44 0 * * 3' # at 00:44 on wednesday
 

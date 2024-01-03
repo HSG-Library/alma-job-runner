@@ -3,6 +3,7 @@ name: Build and push Docker image
 on:
   push:
     branches: ["main"]
+    paths: ['src/**', 'pom.xml']
 
 env:
   AZURE_WEBAPP_NAME: "alma-job-runner"
